@@ -8,4 +8,13 @@ So Stay Tuned !! If you like my blog work ! 🤗
 # About Project
 > Different Approaches  For Highlighting Possible Moves for a Selected Chess Piece!
 > 
-Currently this Project is **Test version** !  
+  The **Aim** of the Project is  can we identify recurring patterns within a general behavior, without examining each action?
+# Perks 
+- You can easily modify position of Highlight  through Inspector in Realtime(▶️) using slider
+- You can easily switch chess piece after clicking on Check Button 
+
+# Downside
+- While switching chess pieces you need to click **None** First then we can assigned. 
+
+
+  
