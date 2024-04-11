@@ -24,5 +24,6 @@ and during PlayMode you can control position of highlight and select chess piece
 # Downside
 - While switching chess pieces you need to click  _**None**_ First then we can assigned.
 - You can't remove chess piece once it instantiate !
+- The Highlight overlapping other pieces 🫥. 
  
 
