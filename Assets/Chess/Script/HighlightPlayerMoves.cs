@@ -168,7 +168,7 @@ public class HighlightPlayerMoves : MonoBehaviour
             if (posStore.Contains(storeChessPieceCurrentPos[i]))
             {
                 int index = posStore.IndexOf(storeChessPieceCurrentPos[i]);
-                Debug.Log("Position found in posStore: " + storeChessPieceCurrentPos[i].ToString() + ", Index in posStore: " + index);
+              //  Debug.Log("Position found in posStore: " + storeChessPieceCurrentPos[i].ToString() + ", Index in posStore: " + index);
             }
         }
 
