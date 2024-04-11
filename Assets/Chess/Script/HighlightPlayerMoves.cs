@@ -1,15 +1,15 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-
 [System.Serializable]
+
 public class HighlightPlayerMoves : MonoBehaviour
 {
     Dictionary<GameObject, string> coordinatesofSpawnObject;
     IStoreChessPiece storeChessPiece;
     public GameObject[] highlightsymbol;
     List<GameObject> storeSpawnHighlight = new List<GameObject>();
-    List<GameObject> piecesChess = new List<GameObject>();
+    List<Vector3> storeChessPieceCurrentPos = new List<Vector3>();
+    List<Vector3> posStore = new List<Vector3>();
     private void Start()
     {
         storeChessPiece = GetComponent<IStoreChessPiece>();
@@ -41,49 +41,50 @@ public class HighlightPlayerMoves : MonoBehaviour
         }
     }
 
-    void HighlightSteps(string piece, GameObject piecePosition)
+    void HighlightSteps(string piece, GameObject pieceCurrentPosition)
     {
         ClearSpawnedHighlights();
-        List<Vector3> posStore = new List<Vector3>();
+
 
         switch (piece)
         {
             case "Pawn":
-                AddPawnMoves(piecePosition.transform.position, posStore);
-                break;
+                AddPawnMoves(pieceCurrentPosition.transform.position);
+            break;
 
             case "Elephant":
-                AddStraightMoves(piecePosition.transform.position, posStore);
-                break;
+                AddStraightMoves(pieceCurrentPosition.transform.position);
+            break;
 
             case "Camel":
-                AddDiagonalMoves(piecePosition.transform.position, posStore);
-                break;
+                AddDiagonalMoves(pieceCurrentPosition.transform.position);
+            break;
 
             case "Queen":
-                AddStraightMoves(piecePosition.transform.position, posStore);
-                AddDiagonalMoves(piecePosition.transform.position, posStore);
-                break;
+                AddStraightMoves(pieceCurrentPosition.transform.position);
+                AddDiagonalMoves(pieceCurrentPosition.transform.position);
+             break;
 
             case "King":
-                AddKingMoves(piecePosition.transform.position, posStore);
-                break;
+                AddKingMoves(pieceCurrentPosition.transform.position);
+             break;
 
             case "Horse":
-                AddHorseMoves(piecePosition.transform.position, posStore);
-                break;
+                AddHorseMoves(pieceCurrentPosition.transform.position);
+             break;
         }
 
-        SpawnHighlight(piecePosition, posStore);
+        Vector3 pos = new Vector3(pieceCurrentPosition.transform.position.x,pieceCurrentPosition.transform.position.y,0);
+        SpawnHighlight(pos);
+        
     }
-
-    void AddPawnMoves(Vector3 position, List<Vector3> posStore)
+    void AddPawnMoves(Vector3 position)
     {
         Vector3 pos1 = new Vector3(position.x, position.y + 1, 0);
         posStore.Add(pos1);
     }
 
-    void AddStraightMoves(Vector3 position, List<Vector3> posStore)
+    void AddStraightMoves(Vector3 position)
     {
         for (int i = 1; i <= 8; i++)
         {
@@ -106,7 +107,7 @@ public class HighlightPlayerMoves : MonoBehaviour
         }
     }
 
-    void AddDiagonalMoves(Vector3 position, List<Vector3> posStore)
+    void AddDiagonalMoves(Vector3 position)
     {
         int[] offsets = { 1, -1 };
 
@@ -123,7 +124,7 @@ public class HighlightPlayerMoves : MonoBehaviour
     }
 
 
-    void AddKingMoves(Vector3 position, List<Vector3> posStore)
+    void AddKingMoves(Vector3 position)
     {
         int[] offsets = { -1, 0, 1 };
 
@@ -138,7 +139,7 @@ public class HighlightPlayerMoves : MonoBehaviour
     }
 
 
-    void AddHorseMoves(Vector3 position, List<Vector3> posStore)
+    void AddHorseMoves(Vector3 position)
     {
         Dictionary<int, List<int>> moves = new Dictionary<int, List<int>>()
         {
@@ -158,17 +159,32 @@ public class HighlightPlayerMoves : MonoBehaviour
         }
     }
 
-    void SpawnHighlight(GameObject piecePosition, List<Vector3> posStore)
-    {
-        piecesChess.Add(piecePosition);
-        posStore.Where(pos =>
-            pos.x >= 0 && pos.x < 8 && pos.y >= 0 && pos.y < 8 && !piecesChess.Any(p => p.transform.position == pos)
-        ).ToList().ForEach(pos =>
+   void SpawnHighlight(Vector3 piecePosition)
+{
+        storeChessPieceCurrentPos.Add(piecePosition);
+
+        for (int i = 0; i < storeChessPieceCurrentPos.Count; i++)
         {
-            GameObject spawn = Instantiate(highlightsymbol[0], pos, Quaternion.identity);
-            storeSpawnHighlight.Add(spawn);
-        });
-    }
+            if (posStore.Contains(storeChessPieceCurrentPos[i]))
+            {
+                int index = posStore.IndexOf(storeChessPieceCurrentPos[i]);
+                Debug.Log("Position found in posStore: " + storeChessPieceCurrentPos[i].ToString() + ", Index in posStore: " + index);
+            }
+        }
+
+        for (int i = 0; i < posStore.Count; i++)
+        {
+            if ((posStore[i].x >= 0 && posStore[i].x < 8) && (posStore[i].y >= 0 && posStore[i].y < 8))
+            {
+
+                GameObject spawn = Instantiate(highlightsymbol[0], posStore[i], Quaternion.identity);
+                storeSpawnHighlight.Add(spawn);
+            }
+
+        }  
+        
+   }
+
 
     void ClearSpawnedHighlights()
     {
@@ -176,6 +192,10 @@ public class HighlightPlayerMoves : MonoBehaviour
         {
             Destroy(highlight);
         }
-        storeSpawnHighlight.Clear();
+        if (storeSpawnHighlight != null && posStore != null)
+        {
+            storeSpawnHighlight.Clear();
+            posStore.Clear();
+        }
     }
 }

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
 [Flags]
 public enum SelectPlayer
 {
@@ -19,20 +20,19 @@ public enum SelectPlayer
 
 public class ChessPieces : MonoBehaviour ,IStoreChessPiece
 {
-   public SelectPlayer player;
+    public SelectPlayer player;
     public SliderValue slider;
     public GameObject[] listofPieces;
     public Dictionary<string, GameObject> pieceInstances;
     public Button checkCorrdiantes;
     public GameObject highlight;
     Vector2 newPosition;
-
-
-   public Dictionary<GameObject ,string> storeSpawn;
+    public Dictionary<GameObject ,string> storeSpawn;
   
 
     public static ChessPieces instance;
     public List<string> chesspieceName = new List<string>()
+
     {
         "Pawn",
         "Elephant",
@@ -41,15 +41,29 @@ public class ChessPieces : MonoBehaviour ,IStoreChessPiece
         "King",
         "Queen"
     };
+
+   public List<Vector2> positions = new List<Vector2>();
     private void Awake()
     {
         instance = this;
     }
     private void Start()
-    {storeSpawn = new Dictionary<GameObject ,string>();
+    {   storeSpawn = new Dictionary<GameObject ,string>();
         pieceInstances = new Dictionary<string, GameObject>();
+
+        for (float i = 0.5f; i < 8; i++)
+        {
+            for (float j = 0.5f; j < 8; j++)
+            {
+                Vector2 newPosition = new Vector2(i, j);
+                positions.Add(newPosition);
+            }
+        }
+
+
         checkCorrdiantes.onClick.AddListener(delegate { SelectedPieceName(); });
         InputPiecesName();
+
     }
     private void Update()
     {
@@ -59,25 +73,26 @@ public class ChessPieces : MonoBehaviour ,IStoreChessPiece
 
 
     void SelectedPieceName()
-    {
-        Debug.Log(player.ToString());
-
-        if( pieceInstances.Any(p => p.Key== player.ToString()))
+    {           
+        if (pieceInstances.Any(p => p.Key == player.ToString()) )
         {
-           GameObject piece = pieceInstances[player.ToString()];
+            GameObject piece = pieceInstances[player.ToString()];
 
-           
-           GameObject g= Instantiate(piece,highlight.transform.position,Quaternion.identity);
-            for (int i = 0; i < chesspieceName.Count; i++)
+            Vector2 highlightPosition = new Vector2(highlight.transform.position.x, highlight.transform.position.y);
+            if (positions.Contains(highlightPosition))
             {
-                if (piece.name == chesspieceName[i])
+                GameObject g = Instantiate(piece, highlight.transform.position, Quaternion.identity);
+                for (int i = 0; i < chesspieceName.Count; i++)
                 {
-                    storeSpawn.Add(g, chesspieceName[i]);
+                    if (piece.name == chesspieceName[i])
+                    {
+                        storeSpawn.Add(g, chesspieceName[i]);
+                    }
+
                 }
+                positions.Remove(highlightPosition);
             }
 
-          
-           
         }
 
     }
@@ -93,8 +108,9 @@ public class ChessPieces : MonoBehaviour ,IStoreChessPiece
     }
 
     void UpdatePosition()
-    {       if (highlight != null)
-             {
+    {  
+        if (highlight != null)
+       {
 
             float xCoord = slider.xCoordinates;
             float yCoord = slider.yCoordinates;
@@ -102,18 +118,13 @@ public class ChessPieces : MonoBehaviour ,IStoreChessPiece
             highlight.transform.position = newPosition;
           
 
-           }
+       }
     }
 
-   public Dictionary<GameObject, string> storeObject()
+    public Dictionary<GameObject, string> storeObject()
     {
         return storeSpawn;
     }
-
-
-   
-
-
 
 
 }
